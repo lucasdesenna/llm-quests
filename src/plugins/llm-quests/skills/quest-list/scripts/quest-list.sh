@@ -8,7 +8,6 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 skill_dir="${CLAUDE_SKILL_DIR:-${CODEX_SKILL_DIR:-${SKILL_DIR:-$(cd "$script_dir/.." && pwd)}}}"
 
-QUESTS_DIR="${QUESTS_DIR:-$PWD/quests}"
 active_only=0
 
 for arg in "$@"; do
@@ -21,6 +20,45 @@ for arg in "$@"; do
     *) echo "unknown flag: $arg" >&2; exit 2 ;;
   esac
 done
+
+# Locate the quests directory. The current shell directory is unreliable (the
+# caller may have cd'd into a service repo or the skill dir), so try, in order:
+#   1. an explicit QUESTS_DIR override
+#   2. the nearest `quests/` directory walking up from $PWD
+#   3. a launch-directory hint from the harness
+# Fail loudly if none is found rather than silently printing an empty list.
+resolve_quests_dir() {
+  if [ -n "${QUESTS_DIR:-}" ]; then
+    printf '%s\n' "$QUESTS_DIR"
+    return 0
+  fi
+
+  local dir="$PWD"
+  while :; do
+    if [ -d "$dir/quests" ]; then
+      printf '%s\n' "$dir/quests"
+      return 0
+    fi
+    [ "$dir" = "/" ] && break
+    dir="$(dirname "$dir")"
+  done
+
+  local hint
+  for hint in "${CLAUDE_PROJECT_DIR:-}" "${CMUX_AGENT_LAUNCH_CWD:-}"; do
+    if [ -n "$hint" ] && [ -d "$hint/quests" ]; then
+      printf '%s\n' "$hint/quests"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+if ! QUESTS_DIR="$(resolve_quests_dir)"; then
+  echo "error: could not locate a 'quests/' directory." >&2
+  echo "  Run from your quests project (or a subdirectory), or set QUESTS_DIR=/path/to/quests." >&2
+  exit 1
+fi
 
 # Read a scalar from the first YAML frontmatter block.
 # Strips surrounding double quotes if present.

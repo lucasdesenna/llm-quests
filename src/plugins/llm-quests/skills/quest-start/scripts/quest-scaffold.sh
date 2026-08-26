@@ -44,24 +44,18 @@ env QUEST_ID="$quest_id" QUEST_TITLE="$title" QUEST_TITLE_YAML="$title_yaml" TOD
 env QUEST_ID="$quest_id" QUEST_TITLE="$title" QUEST_TITLE_YAML="$title_yaml" TODAY="$today" QUEST_PROBLEM_DEFINITION="$problem_definition" \
   envsubst "$render_vars" < "$skill_dir/references/knowledge-index-template.md" > "$quest_dir/knowledge/index.md"
 
-init_quest_repo() {
-  [ "${QUEST_INIT_GIT:-1}" = "0" ] && return 0
-  if ! command -v git >/dev/null 2>&1; then
-    echo "note: git not found; skipping quest repo init" >&2
-    return 0
-  fi
-  [ -d "$quest_dir/.git" ] && return 0
-
-  if ! git init -q "$quest_dir" >&2; then
-    echo "warning: git init failed; quest scaffolded without a repo" >&2
-    return 0
-  fi
-  git -C "$quest_dir" add -A >&2 || true
-  if ! git -C "$quest_dir" commit -q -m "chore: scaffold quest $quest_id" >&2; then
-    echo "warning: no initial commit (set git user.name/user.email); files are staged" >&2
-  fi
+is_git_available() {
+  command -v git >/dev/null 2>&1
 }
 
-init_quest_repo
+init_quest_repo() {
+  git init -q "$quest_dir"
+  git -C "$quest_dir" add -A
+  git -C "$quest_dir" commit -q -m "setup quest: $quest_id"
+}
+
+if is_git_available; then
+  init_quest_repo
+fi
 
 echo "$quest_file"

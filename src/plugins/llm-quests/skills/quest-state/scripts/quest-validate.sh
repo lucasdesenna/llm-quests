@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
 # Validate quest frontmatter and basic lifecycle fields.
+# Usage: quest-validate.sh <quests-dir> <quest-id|/absolute/path/to/quest.md|all>
 set -euo pipefail
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-skill_dir="${CLAUDE_SKILL_DIR:-${CODEX_SKILL_DIR:-${SKILL_DIR:-$(cd "$script_dir/.." && pwd)}}}"
+quests_dir="${1:-}"
+target="${2:-}"
 
-QUESTS_DIR="${QUESTS_DIR:-$PWD/quests}"
-
-target="${1:-}"
-valid_phases="scouting discovery planning formalization execution documentation improvement complete"
-valid_complexities="tbd simple medium complex"
-
-if [ -z "$target" ]; then
-  echo "usage: quest-validate.sh <quest-id|quest.md|all>" >&2
+if [ -z "$quests_dir" ] || [ -z "$target" ]; then
+  echo "usage: quest-validate.sh <quests-dir> <quest-id|/absolute/path/to/quest.md|all>" >&2
   exit 2
 fi
+case "$quests_dir" in
+  /*) ;;
+  *) echo "quests-dir must be an absolute path: $quests_dir" >&2; exit 2 ;;
+esac
+if [ ! -d "$quests_dir" ]; then
+  echo "quests-dir does not exist or is not a directory: $quests_dir" >&2
+  exit 2
+fi
+
+valid_phases="scouting discovery planning formalization execution documentation improvement complete"
+valid_complexities="tbd simple medium complex"
 
 yaml_get() {
   local file="$1" key="$2"
@@ -83,15 +89,14 @@ validate_file() {
 
 if [ "$target" = "all" ]; then
   failures=0
-  for file in "$QUESTS_DIR"/*/quest.md; do
+  for file in "$quests_dir"/*/quest.md; do
     [ -f "$file" ] || continue
     validate_file "$file" || failures=1
   done
   exit "$failures"
 fi
 
-if [ -f "$target" ]; then
-  validate_file "$target"
-else
-  validate_file "$QUESTS_DIR/$target/quest.md"
-fi
+case "$target" in
+  /*) validate_file "$target" ;;
+  *) validate_file "$quests_dir/$target/quest.md" ;;
+esac

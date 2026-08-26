@@ -1,21 +1,27 @@
 #!/usr/bin/env bash
 # Resolve a quest identifier to a single quest row from quest-list.sh.
 # Output is the CSV row without the header: id,title,phase,complexity,created,updated,path
+# Usage: quest-resolve.sh <quests-dir> <id-or-query>
 set -euo pipefail
+
+quests_dir="${1:-}"
+query="${2:-}"
+
+if [ -z "$quests_dir" ] || [ -z "$query" ]; then
+  echo "usage: quest-resolve.sh <quests-dir> <id-or-query>" >&2
+  exit 2
+fi
+case "$quests_dir" in
+  /*) ;;
+  *) echo "quests-dir must be an absolute path: $quests_dir" >&2; exit 2 ;;
+esac
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 skill_dir="${CLAUDE_SKILL_DIR:-${CODEX_SKILL_DIR:-${SKILL_DIR:-$(cd "$script_dir/.." && pwd)}}}"
 skills_dir="$(cd "$skill_dir/.." && pwd)"
 quest_list_script="$skills_dir/quest-list/scripts/quest-list.sh"
 
-query="${1:-}"
-
-if [ -z "$query" ]; then
-  echo "usage: quest-resolve.sh <id-or-query>" >&2
-  exit 2
-fi
-
-rows="$(bash "$quest_list_script" | tail -n +2)"
+rows="$(bash "$quest_list_script" "$quests_dir" | tail -n +2)"
 if [ -z "$rows" ]; then
   echo "no quests found" >&2
   exit 1

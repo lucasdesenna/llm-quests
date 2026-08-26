@@ -2,9 +2,6 @@
 # Validate whether a quest phase transition is allowed.
 set -euo pipefail
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-skill_dir="${CLAUDE_SKILL_DIR:-${CODEX_SKILL_DIR:-${SKILL_DIR:-$(cd "$script_dir/.." && pwd)}}}"
-
 from="${1:-}"
 to="${2:-}"
 

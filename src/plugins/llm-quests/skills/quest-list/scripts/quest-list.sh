@@ -1,23 +1,37 @@
 #!/usr/bin/env bash
-# Lists quests from YAML frontmatter in quests/*/quest.md.
+# Lists quests from YAML frontmatter in <quests-dir>/*/quest.md.
 # Output is CSV, sorted by `updated` descending.
-# Usage: quest-list.sh [--active]
+# Usage: quest-list.sh <quests-dir> [--active]
 #   --active  filter out completed quests (phase=complete|completed|done)
 set -euo pipefail
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-skill_dir="${CLAUDE_SKILL_DIR:-${CODEX_SKILL_DIR:-${SKILL_DIR:-$(cd "$script_dir/.." && pwd)}}}"
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  sed -n '2,5p' "$0" | sed 's/^# \?//'
+  exit 0
+fi
 
-QUESTS_DIR="${QUESTS_DIR:-$PWD/quests}"
+quests_dir="${1:-}"
+if [ -z "$quests_dir" ]; then
+  echo "usage: quest-list.sh <quests-dir> [--active]" >&2
+  exit 2
+fi
+shift
+
+case "$quests_dir" in
+  /*) ;;
+  *) echo "quests-dir must be an absolute path: $quests_dir" >&2; exit 2 ;;
+esac
+if [ ! -d "$quests_dir" ]; then
+  echo "quests-dir does not exist or is not a directory: $quests_dir" >&2
+  exit 2
+fi
+
 active_only=0
 
 for arg in "$@"; do
   case "$arg" in
     --active) active_only=1 ;;
-    -h|--help)
-      sed -n '2,5p' "$0" | sed 's/^# \?//'
-      exit 0
-      ;;
+    -h|--help) echo "--help must be the first argument" >&2; exit 2 ;;
     *) echo "unknown flag: $arg" >&2; exit 2 ;;
   esac
 done
@@ -40,7 +54,7 @@ yaml_get() {
 }
 
 rows=()
-for qf in "$QUESTS_DIR"/*/quest.md; do
+for qf in "$quests_dir"/*/quest.md; do
   [ -f "$qf" ] || continue
   dir="$(basename "$(dirname "$qf")")"
 

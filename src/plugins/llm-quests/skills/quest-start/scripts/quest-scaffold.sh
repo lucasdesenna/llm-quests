@@ -54,4 +54,18 @@ env QUEST_ID="$quest_id" QUEST_TITLE="$title" QUEST_TITLE_YAML="$title_yaml" TOD
 env QUEST_ID="$quest_id" QUEST_TITLE="$title" QUEST_TITLE_YAML="$title_yaml" TODAY="$today" QUEST_PROBLEM_DEFINITION="$problem_definition" \
   envsubst "$render_vars" < "$skill_dir/references/knowledge-index-template.md" > "$quest_dir/knowledge/index.md"
 
+is_git_available() {
+  command -v git >/dev/null 2>&1
+}
+
+init_quest_repo() {
+  git init -q "$quest_dir" && \
+    git -C "$quest_dir" add -A && \
+    git -C "$quest_dir" commit -q -m "setup quest: $quest_id" || true
+}
+
+if is_git_available; then
+  init_quest_repo
+fi
+
 echo "$quest_file"

@@ -1,21 +1,31 @@
 #!/usr/bin/env bash
 # Create a quest directory from quest-start reference templates.
+# Usage: quest-scaffold.sh <quests-dir> <quest-id> <title> <problem-definition>
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 skill_dir="${CLAUDE_SKILL_DIR:-${CODEX_SKILL_DIR:-${SKILL_DIR:-$(cd "$script_dir/.." && pwd)}}}"
 
-quest_id="${1:-}"
-title="${2:-}"
-problem_definition="${3:-}"
-today="$(date +%Y-%m-%d)"
+quests_dir="${1:-}"
+quest_id="${2:-}"
+title="${3:-}"
+problem_definition="${4:-}"
 
-if [ -z "$quest_id" ] || [ -z "$title" ] || [ -z "$problem_definition" ]; then
-  echo "usage: quest-scaffold.sh <quest-id> <title> <problem-definition>" >&2
+if [ -z "$quests_dir" ] || [ -z "$quest_id" ] || [ -z "$title" ] || [ -z "$problem_definition" ]; then
+  echo "usage: quest-scaffold.sh <quests-dir> <quest-id> <title> <problem-definition>" >&2
   exit 2
 fi
+case "$quests_dir" in
+  /*) ;;
+  *) echo "quests-dir must be an absolute path: $quests_dir" >&2; exit 2 ;;
+esac
+if [ ! -d "$quests_dir" ]; then
+  echo "quests-dir does not exist or is not a directory: $quests_dir" >&2
+  exit 2
+fi
+today="$(date +%Y-%m-%d)"
 
-quest_dir="quests/$quest_id"
+quest_dir="$quests_dir/$quest_id"
 quest_file="$quest_dir/quest.md"
 
 if [ -e "$quest_dir" ]; then

@@ -10,19 +10,25 @@ You are helping user see an overview of all their quests.
 
 ## What to do
 
-### Step 1: Run the listing script
+### Step 1: Set the quest root
+
+Resolve `quests-dir` to the absolute path of the quest collection directory, whose direct children are quest ids. Get it from explicit user or workspace context; never derive it from the process working directory. If it cannot be determined, ask the user.
+
+### Step 2: Run the listing script
 
 ```bash
-bash scripts/quest-list.sh
+bash "/absolute/path/to/quest-list/scripts/quest-list.sh" "/absolute/path/to/quests"
 ```
+
+Resolve the script path from this skill's installed directory; do not assume the shell is running there.
 
 Outputs CSV with columns `id,title,phase,complexity,created,updated,path`, one row per quest, sorted by `updated` descending. Pass `--active` to hide quests whose phase is `complete`, `completed`, or `done`.
 
-### Step 2: Present the output
+### Step 3: Present the output
 
 Render the CSV as a markdown table for the user (don't show raw CSV). Group by phase or show as-is — whichever reads better for the number of quests. Flag anything with `complexity: tbd` as unscoped, and anything `updated` > 2 weeks ago as stale.
 
-### Step 3: Offer actions
+### Step 4: Offer actions
 
 - "Want to resume one of these? Just tell me which — a partial id works."
 - "Want to start a new quest? Describe what you're working on."

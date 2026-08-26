@@ -6,7 +6,7 @@ user-invocable: false
 
 # Quest Knowledge
 
-Use this skill when a command or phase needs to inspect, sync, search, or export quest knowledge. Use `quest-state` first when a quest id must be resolved or lifecycle state is relevant.
+Use this skill when a command or phase needs to inspect, sync, search, or export quest knowledge. Use `quest-state` first when a quest id must be resolved or lifecycle state is relevant. Keep its explicit `quests-dir` and `quest-id`, and resolve quest-local paths from `"{quests-dir}/{quest-id}"`; never from the process working directory.
 
 ## Local Contract
 
@@ -30,7 +30,7 @@ Use this skill when a command or phase needs to inspect, sync, search, or export
 2. Read `knowledge/index.md` before inspecting individual artifacts.
 3. For status, report missing index entries, stale `updated` dates, and provider sync values.
 4. For sync, follow `/quest:knowledge` and `commands/quest/knowledge.md`.
-5. For search, prefer the configured provider. If none is available, fall back to local file search under `quests/`.
+5. For search, prefer the configured provider. If none is available, fall back to local file search under `"{quests-dir}/"`.
 6. For export, include stable quest identity plus provider-ready knowledge artifacts. Exclude execution progress and Jira status as state.
 
 ## Provider Sync Values

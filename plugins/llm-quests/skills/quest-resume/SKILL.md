@@ -4,13 +4,13 @@ description: Resume an existing quest and route the session to the correct phase
 user-invocable: false
 ---
 
-Use `quest-state` for resolution, validation, and lifecycle rules.
+Use `quest-state` for resolution, validation, and lifecycle rules. Keep its explicit `quests-dir` and `quest-id`, and resolve all quest artifact paths from `"{quests-dir}/{quest-id}"`; never from the process working directory.
 
 1. Resolve the quest:
    - With an argument, use `quest-state` to resolve it (runs `quest-resolve.sh` internally).
    - Without an argument, use the quest-list skill to show active quests and ask which to resume.
    - If id matching fails and a knowledge provider is available, search notes tagged `quest` and ask user to choose from the top results.
-2. Load `quest.md`, validate with `quest-state`'s `quest-validate.sh`, and summarize title, phase, updated date, and next likely action.
+2. Load `"{quests-dir}/{quest-id}/quest.md"`, validate with `quest-state`'s `quest-validate.sh` using the same `quests-dir` as its first argument, and summarize title, phase, updated date, and next likely action.
 3. Read the minimum extra context for the phase:
    - `discovery`: `knowledge/index.md`, relevant `knowledge/` files, and resume unknowns.
    - `planning`: all relevant `knowledge/` files.

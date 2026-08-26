@@ -4,6 +4,7 @@ description: Start a new throughly defined Quest by scaffolding files and settin
 user-invocable: false
 ---
 
-1. Capture proposed title and quest id. Confirm them with user.
-2. Scaffold files with `bash scripts/quest-scaffold.sh <quest-id> <title> <problem-definition>`.
-3. Use `quest-state` for validation and `quest-knowledge` for knowledge provider sync.
+1. Resolve `quests-dir` to the absolute path of the quest collection directory, whose direct children are quest ids. Get it from explicit user or workspace context; never derive it from the process working directory. If it cannot be determined, ask the user.
+2. Capture proposed title and quest id. Confirm them with user.
+3. Resolve the scaffold script from this skill's installed directory and run `bash "/absolute/path/to/quest-start/scripts/quest-scaffold.sh" "/absolute/path/to/quests" <quest-id> <title> <problem-definition>`. Do not use a working-directory-relative script path.
+4. Use `quest-state` with the same `quests-dir` for validation and `quest-knowledge` for knowledge provider sync.

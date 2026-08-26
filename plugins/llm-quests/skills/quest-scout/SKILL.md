@@ -4,8 +4,9 @@ description: Interview user on a Quest idea until it can be formalized. Use when
 user-invocable: false
 ---
 
-1. Analyze provided information. Fetch external artifacts when supplied – eg. Jira cards, Slack messages, Google documents and Confluence pages.
-2. Interview me relentlessly about the Quest idea until you can infer all the arguments of `quest-start`. Consider topics such as:
+1. Resolve `quests-dir` to the explicit absolute quest collection path through `quest-start`; never infer it from the process working directory.
+2. Analyze provided information. Fetch external artifacts when supplied – eg. Jira cards, Slack messages, Google documents and Confluence pages.
+3. Interview me relentlessly about the Quest idea until you can infer all the arguments of `quest-start`. Consider topics such as:
    - Desired outcome
    - Stakeholders
    - Scope
@@ -13,4 +14,4 @@ user-invocable: false
    - Known facts
    - Unknowns
    - Constraints
-3. Once I approve the inferred arguments, invoke `quest-start` with them.
+4. Once I approve the inferred arguments, invoke `quest-start` with them and the resolved `quests-dir`.

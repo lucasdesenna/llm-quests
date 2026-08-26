@@ -10,15 +10,16 @@ You are helping users understand the Quest framework itself.
 
 ## Workflow
 
-1. Read `quests/CLAUDE.md` first for the framework overview.
-2. Read `quest-state/references/lifecycle.md` for phases and transition rules.
-3. If the user asks about commands, read the relevant files under `quests/.claude/commands/quest/`.
-4. If the user asks for a deeper manual, read the relevant phase skills:
+1. Resolve `quests-dir` to the explicit absolute quest collection directory from user or workspace context; never infer it from the process working directory.
+2. Read `"{quests-dir}/CLAUDE.md"` first for the framework overview.
+3. Read `quest-state/references/lifecycle.md` from that skill's installed directory for phases and transition rules.
+4. If the user asks about commands, read the relevant files under `"{quests-dir}/.claude/commands/quest/"`.
+5. If the user asks for a deeper manual, read the relevant phase skills:
    - `quest-start` and `quest-scouting` for starting quests.
    - `quest-resume`, `quest-state`, and `quest-list` for navigation and state.
    - `quest-discovery`, `quest-planning`, `quest-formalization`, `quest-execution`, `quest-documentation`, and `quest-improvement` for lifecycle phase work.
    - `quest-knowledge` for knowledge artifacts and provider sync.
-5. Answer from local sources of truth. Mark uncertainty instead of inventing framework rules.
+6. Answer from local sources of truth. Mark uncertainty instead of inventing framework rules.
 
 ## Output Guidance
 

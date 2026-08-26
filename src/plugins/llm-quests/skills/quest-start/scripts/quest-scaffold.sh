@@ -49,9 +49,9 @@ is_git_available() {
 }
 
 init_quest_repo() {
-  git init -q "$quest_dir"
-  git -C "$quest_dir" add -A
-  git -C "$quest_dir" commit -q -m "setup quest: $quest_id"
+  git init -q "$quest_dir" && \
+    git -C "$quest_dir" add -A && \
+    git -C "$quest_dir" commit -q -m "setup quest: $quest_id" || true
 }
 
 if is_git_available; then
